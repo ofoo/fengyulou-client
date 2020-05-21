@@ -1,7 +1,7 @@
 {
   "homeInfo": {
     "title": "首页",
-    "href": "page/welcome-1.html?t=1"
+    "href": ""
   },
   "logoInfo": {
     "title": "风雨楼",
@@ -15,6 +15,26 @@
       "href": "",
       "target": "_self",
       "child": [
+        {
+          "title": "任务管理",
+          "href": "",
+          "icon": "fa fa-home",
+          "target": "_self",
+          "child": [
+            {
+              "title": "任务列表",
+              "href": "page/task-list.html",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            },
+            {
+              "title": "任务标签",
+              "href": "page/taskLabel-list.html",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            }
+          ]
+        },
         {
           "title": "主页模板",
           "href": "",

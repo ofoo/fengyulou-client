@@ -68,3 +68,6 @@ body {
     -moz-border-radius: 2em;
     border-radius: 2em
 }
+.layuimini-container .table-search-fieldset {
+    padding: 0px 10px 7px 10px;
+}
