@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>任务编辑</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form layuimini-form" style="margin-top: 20px" lay-filter="formData">
+    <input type="hidden" id="id" name="id">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label required">任务简述</label>
+        <div class="layui-input-block">
+            <textarea id="sketch" name="sketch" class="layui-textarea" placeholder="任务简述"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">项目名称</label>
+        <div class="layui-input-inline">
+            <select id="projectId" name="projectId"></select>
+        </div>
+        <button type="button" class="layui-btn" id="project-insert">添加</button>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">任务标签</label>
+        <div class="layui-input-inline">
+            <select id="taskLabelId" name="taskLabelId"></select>
+        </div>
+        <button type="button" class="layui-btn" id="taskLabel-insert">添加</button>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">执行人</label>
+        <div class="layui-input-inline">
+            <select id="memberId" name="memberId"></select>
+        </div>
+        <button type="button" class="layui-btn" id="member-insert">添加</button>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">任务状态</label>
+        <div class="layui-input-inline">
+            <select id="status" name="status">
+                <option value="0">未完成</option>
+                <option value="1">已完成</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">保存</button>
+            <button type="reset" class="layui-btn layui-btn-warm">重置</button>
+            <button type="button" id="fengyulou-close" class="layui-btn layui-btn-danger">关闭</button>
+        </div>
+    </div>
+</form>
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //关闭弹窗不刷新
+        $("#fengyulou-close").on('click', function () {
+            var iframeIndex = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(iframeIndex);
+        })
+
+        //加载项目列表
+        loadProjectList();
+        //加载任务标签列表
+        loadTaskLabelList();
+        //加载人员列表
+        loadMemberList();
+
+        //给表单赋值
+        let data = parent.getCheckData()
+        if (data != null) {
+            form.val("formData", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                "sketch": data.sketch // "name": "value"
+                , "projectId": data.projectId
+                , "taskLabelId": data.taskLabelId
+                , "memberId": data.memberId
+                , "status": data.status
+                , "id": data.id
+            });
+        }
+
+        //添加项目
+        $("#project-insert").on("click", function () {
+            layer.prompt({title: '添加项目'}, function (pass, index) {
+                $.getJSON("http://localhost:8088/fyl/project/save", {
+                    'name': pass,
+                    'userKey': localStorage.getItem("userKey")
+                }, function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.status == 0) {
+                            loadProjectList();
+                            layer.close(index);
+                        }
+                    })
+                })
+            });
+        })
+
+        //添加任务标签
+        $("#taskLabel-insert").on("click", function () {
+            layer.prompt({title: '添加任务标签'}, function (pass, index) {
+                $.getJSON("http://localhost:8088/fyl/taskLabel/save", {
+                    'name': pass,
+                    'userKey': localStorage.getItem("userKey")
+                }, function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.status == 0) {
+                            loadTaskLabelList();
+                            layer.close(index);
+                        }
+                    })
+                })
+            });
+        })
+
+        //添加人员
+        $("#member-insert").on("click", function () {
+            var index = layer.open({
+                type: 2,
+                shade: 0.2,
+                fixed: false, //不固定
+                shadeClose: true,
+                title: false,
+                closeBtn: false,
+                area: ['100%', '100%'],
+                content: '../member/member-save.html',
+                end: function () {
+                    loadMemberList();
+                }
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        })
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            let parameter = data.field;
+            $.ajax({
+                url: 'http://localhost:8088/fyl/task/save',
+                type: 'post',
+                data: {
+                    "userKey": localStorage.getItem("userKey"),
+                    "sketch": parameter.sketch,
+                    "projectId": parameter.projectId,
+                    "taskLabelId": parameter.taskLabelId,
+                    "memberId": parameter.memberId,
+                    "status": parameter.status,
+                    "id": parameter.id
+                },
+                dataType: 'json',
+                success: function (result) {
+                    layer.msg(result.msg, {time: 1000})
+                }
+            });
+
+            return false;
+        });
+
+        //加载项目列表
+        function loadProjectList() {
+            $.ajax({
+                url: 'http://localhost:8088/fyl/project/list/content',
+                type: 'post',
+                data: {
+                    "userKey": localStorage.getItem("userKey")
+                },
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    let list = result.data;
+                    let html = "";
+                    for (let i = 0, l = list.length; i < l; i++) {
+                        html += '<option value="' + list[i].id + '">' + list[i].name + '</option>'
+                    }
+                    $("#projectId").html(html);
+                    form.render('select');
+                }
+            });
+        }
+
+        //加载项目列表
+        function loadTaskLabelList() {
+            $.ajax({
+                url: 'http://localhost:8088/fyl/taskLabel/list/content',
+                type: 'post',
+                data: {
+                    "userKey": localStorage.getItem("userKey")
+                },
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    let list = result.data;
+                    let html = "";
+                    for (let i = 0, l = list.length; i < l; i++) {
+                        html += '<option value="' + list[i].id + '">' + list[i].name + '</option>'
+                    }
+                    $("#taskLabelId").html(html);
+                    form.render('select');
+                }
+            });
+        }
+
+        //加载项目列表
+        function loadMemberList() {
+            $.ajax({
+                url: 'http://localhost:8088/fyl/member/list/content',
+                type: 'post',
+                data: {
+                    "userKey": localStorage.getItem("userKey")
+                },
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    let list = result.data;
+                    let html = "";
+                    for (let i = 0, l = list.length; i < l; i++) {
+                        html += '<option value="' + list[i].id + '">' + list[i].name + '</option>'
+                    }
+                    $("#memberId").html(html);
+                    form.render('select');
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

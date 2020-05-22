@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>人员编辑</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form layuimini-form" style="margin-top: 20px">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">人员姓名</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" name="name" autocomplete="off" placeholder="人员姓名" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">人员标签</label>
+        <div class="layui-input-inline">
+            <select id="memberLabelId" name="memberLabelId"></select>
+        </div>
+        <button type="button" class="layui-btn" id="memberLabel-insert">添加</button>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">保存</button>
+            <button type="reset" class="layui-btn layui-btn-warm">重置</button>
+            <button type="button" id="fengyulou-close" class="layui-btn layui-btn-danger">关闭</button>
+        </div>
+    </div>
+</form>
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //关闭弹窗不刷新
+        $("#fengyulou-close").on('click', function () {
+            var iframeIndex = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(iframeIndex);
+        })
+
+        //加载人员标签列表
+        loadMemberLabelList();
+
+        //添加任务标签
+        $("#memberLabel-insert").on("click", function () {
+            layer.prompt({title: '添加人员标签'}, function (pass, index) {
+                $.getJSON("http://localhost:8088/fyl/memberLabel/save", {
+                    'name': pass,
+                    'userKey': localStorage.getItem("userKey")
+                }, function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.status == 0) {
+                            loadMemberLabelList();
+                            layer.close(index);
+                        }
+                    })
+                })
+            });
+        })
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var parameter = data.field;
+            $.ajax({
+                url: 'http://localhost:8088/fyl/member/save',
+                type: 'post',
+                data: {
+                    "userKey": localStorage.getItem("userKey"),
+                    "name": parameter.name,
+                    "memberLabelId": parameter.memberLabelId,
+                },
+                dataType: 'json',
+                success: function (result) {
+                    layer.msg(result.msg, {time: 1000})
+                }
+            });
+
+            return false;
+        });
+
+        //加载项目列表
+        function loadMemberLabelList() {
+            $.getJSON("http://localhost:8088/fyl/memberLabel/list/content", {"userKey": localStorage.getItem("userKey")}, function (result) {
+                let list = result.data;
+                let html = "";
+                for (let i = 0, l = list.length; i < l; i++) {
+                    html += '<option value="' + list[i].id + '">' + list[i].name + '</option>'
+                }
+                $("#memberLabelId").html(html);
+                form.render('select');
+            })
+        }
+    });
+</script>
+</body>
+</html>
