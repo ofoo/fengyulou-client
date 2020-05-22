@@ -17,21 +17,21 @@
 <body>
 <div class="layui-form layuimini-form">
     <div class="layui-form-item layui-form-text">
-        <label class="layui-form-label">任务简述</label>
+        <label class="layui-form-label required">任务简述</label>
         <div class="layui-input-block">
             <textarea name="remark" class="layui-textarea" placeholder="任务简述"></textarea>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label required">项目名称</label>
-        <div class="layui-input-block">
+        <div class="layui-input-inline">
             <select name="interest" lay-filter="aihao">
                 <option value=""></option>
                 <option value="0">未完成</option>
                 <option value="1">已完成</option>
             </select>
-            <button type="button" class="layui-btn">添加</button>
         </div>
+        <button type="button" class="layui-btn">添加</button>
         <!--<tip>填写自己管理账号的名称。</tip>-->
     </div>
     <!--<div class="layui-form-item">
@@ -43,26 +43,28 @@
     </div>-->
     <div class="layui-form-item">
         <label class="layui-form-label required">任务标签</label>
-        <div class="layui-input-block">
+        <div class="layui-input-inline">
             <select name="interest" lay-filter="aihao">
                 <option value=""></option>
-                <option value="0">标签1</option>
-                <option value="1">标签2</option>
+                <option value="0">未完成</option>
+                <option value="1">已完成</option>
             </select>
         </div>
+        <button type="button" class="layui-btn">添加</button>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">执行人</label>
-        <div class="layui-input-block">
+        <label class="layui-form-label required">执行人</label>
+        <div class="layui-input-inline">
             <select name="interest" lay-filter="aihao">
                 <option value=""></option>
-                <option value="0">张三</option>
-                <option value="1">里斯</option>
+                <option value="0">未完成</option>
+                <option value="1">已完成</option>
             </select>
         </div>
+        <button type="button" class="layui-btn">添加</button>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">任务状态</label>
+        <label class="layui-form-label required">任务状态</label>
         <div class="layui-input-block">
             <select name="interest" lay-filter="aihao">
                 <option value=""></option>
