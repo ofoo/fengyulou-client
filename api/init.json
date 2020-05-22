@@ -23,7 +23,7 @@
           "child": [
             {
               "title": "任务列表",
-              "href": "page/task-list.html",
+              "href": "page/task/list.html",
               "icon": "fa fa-tachometer",
               "target": "_self"
             },
