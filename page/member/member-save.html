@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-<form class="layui-form layuimini-form" style="margin-top: 20px">
+<form class="layui-form layuimini-form" style="margin-top: 20px" lay-filter="formData">
     <div class="layui-form-item">
         <label class="layui-form-label required">人员姓名</label>
         <div class="layui-input-block">
@@ -46,12 +46,21 @@
 
         //关闭弹窗不刷新
         $("#fengyulou-close").on('click', function () {
-            var iframeIndex = parent.layer.getFrameIndex(window.name);
+            let iframeIndex = parent.layer.getFrameIndex(window.name);
             parent.layer.close(iframeIndex);
         })
 
         //加载人员标签列表
         loadMemberLabelList();
+
+        //给表单赋值
+        let data = parent.getCheckData()
+        if (data != null) {
+            form.val("formData", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                "name": data.name,// "name": "value"
+                "memberLabelId": data.memberLabelId
+            });
+        }
 
         //添加任务标签
         $("#memberLabel-insert").on("click", function () {

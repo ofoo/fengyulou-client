@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>任务标签列表</title>
+    <title>人员标签列表</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -72,7 +72,7 @@
 
         table.render({
             elem: '#currentTableId',
-            url: 'http://localhost:8088/fyl/taskLabel/list',
+            url: 'http://localhost:8088/fyl/memberLabel/list',
             where: {
                 "userKey": localStorage.getItem("userKey")
             },
@@ -112,8 +112,8 @@
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
-                layer.prompt({title: '添加任务标签'}, function (pass, index) {
-                    $.getJSON("http://localhost:8088/fyl/taskLabel/save", {
+                layer.prompt({title: '添加人员标签'}, function (pass, index) {
+                    $.getJSON("http://localhost:8088/fyl/memberLabel/save", {
                         'name': pass,
                         'userKey': localStorage.getItem("userKey")
                     }, function (data) {
@@ -131,7 +131,7 @@
                 for (let i = 0, l = data.length; i < l; i++) {
                     ids.push(data[i].id);
                 }
-                $.getJSON('http://localhost:8088/fyl/taskLabel/delete', {
+                $.getJSON('http://localhost:8088/fyl/memberLabel/delete', {
                     "userKey": localStorage.getItem("userKey"),
                     "ids": ids.join()
                 }, function (result) {
@@ -148,8 +148,8 @@
                 }
                 checkData = data[0];
                 console.log(checkData)
-                layer.prompt({title: '添加任务标签',value: checkData.name}, function (pass, index) {
-                    $.getJSON("http://localhost:8088/fyl/taskLabel/save", {
+                layer.prompt({title: '添加人员标签',value: checkData.name}, function (pass, index) {
+                    $.getJSON("http://localhost:8088/fyl/memberLabel/save", {
                         'name': pass,
                         'userKey': localStorage.getItem("userKey"),
                         'id':checkData.id

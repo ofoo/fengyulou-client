@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>任务列表</title>
+    <title>用户列表</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -19,41 +19,17 @@
                 <form class="layui-form" id="search-from" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label"><strong>项目名称</strong></label>
+                            <label class="layui-form-label"><strong>用户账号</strong></label>
                             <div class="layui-input-inline">
-                                <input type="text" id="projectName" name="projectName" autocomplete="off"
-                                       class="layui-input" placeholder="项目名称">
+                                <input type="text" id="loginName" name="loginName" autocomplete="off"
+                                       class="layui-input" placeholder="用户账号">
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <label class="layui-form-label"><strong>执行人</strong></label>
+                            <label class="layui-form-label"><strong>用户名称</strong></label>
                             <div class="layui-input-inline">
-                                <input type="text" id="memberName" name="memberName" autocomplete="off"
-                                       class="layui-input" placeholder="执行人">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label"><strong>任务标签</strong></label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="taskLabelName" name="taskLabelName" autocomplete="off"
-                                       class="layui-input" placeholder="任务标签">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label"><strong>完成时间</strong></label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="finishTime" name="finishTime" autocomplete="off"
-                                       class="layui-input" placeholder="完成时间">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label"><strong>任务状态</strong></label>
-                            <div class="layui-input-inline">
-                                <select id="status" name="status">
-                                    <option value="">任务状态</option>
-                                    <option value="0">未完成</option>
-                                    <option value="1">已完成</option>
-                                </select>
+                                <input type="text" id="name" name="name" autocomplete="off"
+                                       class="layui-input" placeholder="用户名称">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -76,7 +52,6 @@
                 <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add">添加</button>
                 <button class="layui-btn layui-btn-warm layui-btn-sm data-add-btn" lay-event="update">修改</button>
                 <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete">删除</button>
-                <button class="layui-btn layui-btn-sm data-delete-btn" lay-event="finish">完成</button>
             </div>
         </script>
 
@@ -89,7 +64,6 @@
     layui.use(['form', 'table', 'laydate'], function () {
         var $ = layui.jquery,
             form = layui.form,
-            laydate = layui.laydate,
             table = layui.table;
 
         $("#fengyulou-clear").on('click', function () {
@@ -97,14 +71,9 @@
             $("#search-from select").val('');
         })
 
-        //日期
-        laydate.render({
-            elem: '#finishTime'
-        });
-
         table.render({
             elem: '#currentTableId',
-            url: 'http://localhost:8088/fyl/task/list',
+            url: 'http://localhost:8088/fyl/user/list',
             where: {
                 "userKey": localStorage.getItem("userKey")
             },
@@ -116,13 +85,8 @@
             }],
             cols: [[
                 {type: "checkbox", width: 50, align: 'center'},
-                {field: 'projectName', width: 150, title: '项目名称', align: 'center'},
-                {field: 'sketch', title: '任务简述'},
-                {field: 'statusName', width: 100, title: '任务状态', align: 'center'},
-                {field: 'taskLabelName', width: 100, title: '任务标签', align: 'center'},
-                {field: 'finishTime', width: 120, title: '完成时间', align: 'center'},
-                {field: 'memberName', width: 80, title: '执行人', align: 'center'},
-                /*{title: '操作', width: 150, toolbar: '#currentTableBar', align: "center"}*/
+                {field: 'loginName', width: 150, title: '用户账号'},
+                {field: 'name', title: '用户姓名'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             page: true,
@@ -131,22 +95,14 @@
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            var parameter = data.field;
-
-            /*var result = JSON.stringify(data.field);
-            layer.alert(result, {
-                title: '最终的搜索信息'
-            });*/
+            let parameter = data.field;
 
             //执行搜索重载
             table.reload('currentTableId', {
                 where: {
                     "userKey": localStorage.getItem("userKey"),
-                    "projectName": parameter.projectName,
-                    "memberName": parameter.memberName,
-                    "taskLabelName": parameter.taskLabelName,
-                    "status": parameter.status,
-                    "finishTime": parameter.finishTime
+                    "loginName": parameter.loginName,
+                    "name": parameter.name
                 }
             }, 'data');
 
@@ -167,7 +123,7 @@
                     title: false,
                     closeBtn: false,
                     area: ['100%', '100%'],
-                    content: 'task-save.html',
+                    content: 'user-save.html',
                     end: function () {
                         tableReload();
                     }
@@ -182,7 +138,7 @@
                 for (let i = 0, l = data.length; i < l; i++) {
                     ids.push(data[i].id);
                 }
-                $.getJSON('http://localhost:8088/fyl/task/delete', {
+                $.getJSON('http://localhost:8088/fyl/user/delete', {
                     "userKey": localStorage.getItem("userKey"),
                     "ids": ids.join()
                 }, function (result) {
@@ -206,7 +162,7 @@
                     title: false,
                     closeBtn: false,
                     area: ['100%', '100%'],
-                    content: 'task-save.html',
+                    content: 'user-save.html',
                     end: function () {
                         tableReload();
                     }
@@ -214,21 +170,6 @@
                 $(window).on("resize", function () {
                     layer.full(index);
                 });
-            } else if (obj.event === 'finish') {
-                let checkStatus = table.checkStatus('currentTableId');
-                let data = checkStatus.data;
-                let ids = new Array();
-                for (let i = 0, l = data.length; i < l; i++) {
-                    ids.push(data[i].id);
-                }
-                $.getJSON("http://localhost:8088/fyl/task/update/status", {
-                    "userKey": localStorage.getItem("userKey"),
-                    "ids": ids.join()
-                }, function (result) {
-                    layer.msg(result.msg, {time: 1000}, function () {
-                        tableReload();
-                    })
-                })
             }
         });
 

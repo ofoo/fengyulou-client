@@ -194,7 +194,8 @@
                 success: function (result) {
                     if (result.status == 0) {
                         layer.msg('登录成功', {time: 1000}, function () {
-                            localStorage.setItem("userKey", result.data);
+                            localStorage.setItem("userKey", result.data.userKey);
+                            localStorage.setItem("currUserName", result.data.currUserName);
                             window.location = 'main.html';
                         });
                     } else {
