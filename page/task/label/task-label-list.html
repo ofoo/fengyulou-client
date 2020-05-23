@@ -2,12 +2,12 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>任务列表</title>
+    <title>任务标签列表</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
-    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <link rel="stylesheet" href="../../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../css/public.css" media="all">
 </head>
 <body>
 <div class="layuimini-container">
@@ -84,7 +84,7 @@
 
     </div>
 </div>
-<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script>
     layui.use(['form', 'table', 'laydate'], function () {
         var $ = layui.jquery,
@@ -104,7 +104,7 @@
 
         table.render({
             elem: '#currentTableId',
-            url: 'http://localhost:8088/fyl/task/list',
+            url: 'http://localhost:8088/fyl/taskLabel/list',
             where: {
                 "userKey": localStorage.getItem("userKey")
             },
@@ -116,13 +116,7 @@
             }],
             cols: [[
                 {type: "checkbox", width: 50, align: 'center'},
-                {field: 'projectName', width: 150, title: '项目名称', align: 'center'},
-                {field: 'sketch', title: '任务简述'},
-                {field: 'statusName', width: 100, title: '任务状态', align: 'center'},
-                {field: 'taskLabelName', width: 100, title: '任务标签', align: 'center'},
-                {field: 'finishTime', width: 120, title: '完成时间', align: 'center'},
-                {field: 'memberName', width: 80, title: '执行人', align: 'center'},
-                /*{title: '操作', width: 150, toolbar: '#currentTableBar', align: "center"}*/
+                {field: 'name', title: '项目名称'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             page: true,
@@ -160,21 +154,17 @@
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
-                let index = layer.open({
-                    type: 2,
-                    shade: 0.2,
-                    fixed: false, //不固定
-                    shadeClose: true,
-                    title: false,
-                    closeBtn: false,
-                    area: ['100%', '100%'],
-                    content: 'task-save.html',
-                    end: function () {
-                        tableReload();
-                    }
-                });
-                $(window).on("resize", function () {
-                    layer.full(index);
+                layer.prompt({title: '添加任务标签'}, function (pass, index) {
+                    $.getJSON("http://localhost:8088/fyl/taskLabel/save", {
+                        'name': pass,
+                        'userKey': localStorage.getItem("userKey")
+                    }, function (data) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            if (data.status == 0) {
+                                tableReload()
+                            }
+                        })
+                    })
                 });
             } else if (obj.event === 'delete') {  // 监听删除操作
                 let checkStatus = table.checkStatus('currentTableId');
@@ -231,37 +221,6 @@
                     })
                 })
             }
-        });
-
-        let array = new Array();
-
-        //监听表格复选框选择
-        table.on('checkbox(currentTableFilter)', function (obj) {
-            let checkStatus = table.checkStatus('currentTableId');
-            // array.push(checkStatus.data)
-            /*console.log(checkStatus.data);
-            if (obj.type == 'all') {
-                if (obj.checked) {
-                    let checkStatus = table.checkStatus('currentTableId');
-                    let data = checkStatus.data;
-                    for (let i = 0, l = data.length; i < l; i++) {
-                        array.push(data[i].id);
-                    }
-                } else {
-                    array.splice(0, array.length);
-                }
-            } else {
-
-            }*/
-            /*let data=obj.data;
-            if (obj.checked){
-                array.push(data.id)
-            }else{
-                var index = array.indexOf(data.id);
-                if (index > -1) {
-                    array.splice(index,1);
-                }
-            }*/
         });
 
         //刷新数据表格

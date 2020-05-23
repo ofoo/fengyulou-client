@@ -29,7 +29,7 @@
             },
             {
               "title": "任务标签",
-              "href": "page/taskLabel-list.html",
+              "href": "page/task/label/task-label-list.html",
               "icon": "fa fa-tachometer",
               "target": "_self"
             }
